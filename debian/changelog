@@ -1,3 +1,9 @@
+munin-varnish (20120206.1-2) unstable; urgency=low
+
+  * Ensure that the plugin files are executable on install.
+
+ -- Allard Hoeve <allard@byte.nl>  Mon, 06 Feb 2012 15:49:11 +0100
+
 munin-varnish (20120206.1-1) unstable; urgency=low
 
   * Initial release.
