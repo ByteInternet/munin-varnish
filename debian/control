@@ -1,0 +1,12 @@
+Source: munin-varnish
+Section: web
+Priority: optional
+Maintainer: Allard Hoeve <allard@byte.nl>
+Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 8.0.0)
+
+Package: munin-varnish
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Munin checks for Varnish
+ Munin checks for Varnish

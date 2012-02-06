@@ -1,0 +1,5 @@
+munin-varnish (20120206.1-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Allard Hoeve <allard@byte.nl>  Mon,  6 Feb 2012 14:17:33 +0100
