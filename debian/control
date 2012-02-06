@@ -6,7 +6,7 @@ Standards-Version: 3.9.1
 Build-Depends: debhelper (>= 8.0.0)
 
 Package: munin-varnish
-Architecture: any
-Depends: ${shlibs:Depends}
+Architecture: all
+Depends: munin-node
 Description: Munin checks for Varnish
  Munin checks for Varnish

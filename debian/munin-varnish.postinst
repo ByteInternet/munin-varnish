@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/usr/sbin/invoke-rc.d munin-node restart
