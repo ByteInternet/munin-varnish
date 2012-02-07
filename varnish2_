@@ -103,6 +103,8 @@ my %varnishstat = ();
 my %varnishstatnames = ();
 my $self; # Haha, myself, what a clever pun.
 
+my $versionnumber;
+
 # Parameters that can be defined on top level of a graph. Config will print
 # them as "graph_$foo $value\n"
 my @graph_parameters = ('title','total','order','scale','vlabel','args');
@@ -278,7 +280,7 @@ my %ASPECTS = (
 				'type' => 'GAUGE',
 				'label' => 'Number of object heads',
 				'info' => 'Each object head can have one '
-					. 'or more ojbect attached, '
+					. 'or more object attached, '
 					. 'typically based on the Vary: header'
 			}
 		}
@@ -340,6 +342,26 @@ my %ASPECTS = (
 		}
 	},
 	'memory_usage' => {
+
+		# Varnish 3
+		varnish3 => {
+			'title' => 'Memory usage',
+			'order' => 'SMA.s0.g_bytes SMA.s0.g_space',
+			'total' => 'Total',
+			'args' => '--base 1024',
+			'values' => {
+				'SMA.s0.g_bytes' => {
+					'type' => 'GAUGE',
+					'draw' => 'AREA'
+				},
+				'SMA.s0.g_space' => {
+					'type' => 'GAUGE',
+					'draw' => 'STACK'
+				},
+			},
+		},
+
+		# Default 
 		'title' => 'Memory usage',
 		'order' => 'sm_balloc sma_nbytes sms_nbytes',
 		'total' => 'Total',
@@ -720,7 +742,14 @@ sub get_config
 	if (!defined($ASPECTS{$graph})) {
 		usage "No such aspect";
 	}
-	my %values = %{$ASPECTS{$graph}{'values'}};
+
+	my %values;
+	if ($ASPECTS{$graph}{"varnish$versionnumber"}) {
+		%values = %{$ASPECTS{$graph}{"varnish$versionnumber"}{values}};
+	}
+	else {
+		%values = %{$ASPECTS{$graph}{'values'}};
+	}
 
 	print "graph_category Varnish\n";
 	foreach my $field (@graph_parameters) {
@@ -750,7 +779,7 @@ sub get_config
 sub set_aspect
 {
 	$self = $0;
-	$self =~ s/^.*\/varnish_//;
+	$self =~ s/^.*\/varnish2_//;
 	if (!defined($ASPECTS{$self}) && @ARGV == 0) {
 		usage "No such aspect";
 	}
@@ -778,6 +807,25 @@ sub check_args
 		}
 		usage "Unknown argument";
 	}
+}
+
+#
+#
+#
+sub get_version
+{
+	my $version = `varnishstat -V 2>&1`;
+	my $success = $?;
+
+	$versionnumber = substr $version, 21, 1;
+
+	if ($success >> 8 or not $versionnumber) {
+		warn "Could not determine Varnish version!\n";
+		warn "$version\n";
+		exit 1;
+	}
+
+	return $versionnumber;
 }
 
 # Braindead RPN: +,-,/,* will pop two items from @stack, and perform
@@ -828,6 +876,7 @@ sub rpn
 # Execution starts here        #
 ################################
 
+get_version;
 set_aspect;
 check_args;
 populate_stats; 
@@ -839,10 +888,24 @@ populate_stats;
 # 
 # NOTE: Due to differences in varnish-versions, this checks if the value
 # actually exist before using it.
-foreach my $value (keys %{$ASPECTS{$self}{'values'}}) {
-	if (defined($ASPECTS{$self}{'values'}{$value}{'rpn'})) {
+
+# Determine if there is a specific aspect for this version of Varnish.
+# Otherwise, take the default aspect
+
+my $aspect;
+my $versionstring = "varnish" . $versionnumber;   # varnish2/varnish3
+
+if ($ASPECTS{$self}{$versionstring}) {
+	$aspect = $ASPECTS{$self}{$versionstring};
+} 
+else {
+	$aspect = $ASPECTS{$self};
+}
+
+foreach my $value (keys %{$aspect->{'values'}}) {
+	if (defined($aspect->{'values'}{$value}{'rpn'})) {
 		print "$value.value ";
-		rpn($ASPECTS{$self}{'values'}{$value}{'rpn'});
+		rpn($aspect->{'values'}{$value}{'rpn'});
 	} else {
 		if (!defined($varnishstat{$value})) {
 			if ($DEBUG) {
