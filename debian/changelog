@@ -1,4 +1,4 @@
-munin-varnish (20120207.1-1) unstable; urgency=low
+munin-varnish (20120206.1-4) unstable; urgency=low
 
   * Make varnish2_ suitable for Varnish3 by adding versioned
     aspects.
