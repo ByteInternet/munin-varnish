@@ -743,17 +743,31 @@ sub get_config
 		usage "No such aspect";
 	}
 
-	my %values;
+	#
+	# Get the aspect that we need
+	#
+
+	my $aspect;
 	if ($ASPECTS{$graph}{"varnish$versionnumber"}) {
-		%values = %{$ASPECTS{$graph}{"varnish$versionnumber"}{values}};
+		$aspect = $ASPECTS{$graph}{"varnish$versionnumber"};
 	}
 	else {
-		%values = %{$ASPECTS{$graph}{'values'}};
+		$aspect = $ASPECTS{$graph};
 	}
+
+	#
+	# Get the values
+	#
+
+	my %values = %{$aspect->{values}};
+
+	#
+	# Start printing
+	#
 
 	print "graph_category Varnish\n";
 	foreach my $field (@graph_parameters) {
-		print_if_exist(\%ASPECTS,$graph,$field,"graph_$field");
+		print_if_exist({ $graph => $aspect },$graph,$field,"graph_$field");
 	}
 
 	foreach my $value (keys %values) {
