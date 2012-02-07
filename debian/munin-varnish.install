@@ -3,4 +3,5 @@ varnish_cachehitratio /usr/share/munin/plugins/
 varnish_hitrate /usr/share/munin/plugins/
 varnish_total_objects /usr/share/munin/plugins/
 varnish_varnishstat_ /usr/share/munin/plugins/
+varnish2_ /usr/share/munin/plugins/
 debian/plugin-conf.d/munin-varnish /etc/munin/plugin-conf.d/ 
