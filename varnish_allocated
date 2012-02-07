@@ -30,6 +30,9 @@ config)
 	echo 'memory.graph yes'
 	;;
 *)
-	pvstat memory 'bytes allocated$'
+	case $vversion in
+		3.*) pvstat memory 'SMA\.s0\.g_bytes';;
+		*) pvstat memory 'bytes allocated$';;
+	esac
 	;;
 esac
