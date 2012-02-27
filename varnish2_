@@ -346,15 +346,15 @@ my %ASPECTS = (
 		# Varnish 3
 		varnish3 => {
 			'title' => 'Memory usage',
-			'order' => 'SMA.s0.g_bytes SMA.s0.g_space',
+			'order' => 'SMA_s0_g_bytes SMA_s0_g_space',
 			'total' => 'Total',
 			'args' => '--base 1024',
 			'values' => {
-				'SMA.s0.g_bytes' => {
+				'SMA_s0_g_bytes' => {
 					'type' => 'GAUGE',
 					'draw' => 'AREA'
 				},
-				'SMA.s0.g_space' => {
+				'SMA_s0_g_space' => {
 					'type' => 'GAUGE',
 					'draw' => 'STACK'
 				},
@@ -669,8 +669,14 @@ sub populate_stats
 	foreach my $line (`$varnishstatexec $arg`) {
 		chomp($line);
 		if ($line =~ /^([^ ]*)\s+(\d+)\s+(\d*\.\d*)\s+(.*)$/) {
-			$varnishstat{"$1"} = $2;
-			$varnishstatnames{"$1"} = $4;
+			my $name  = $1;
+			my $value = $2;
+			my $desc  = $4;
+
+			   $name =~ s/\./_/g; #http://munin-monitoring.org/wiki/faq#Q:HowdoIrefertomyserviceifithasadot.inthefieldname 
+
+			$varnishstat{"$name"}      = $value;
+			$varnishstatnames{"$name"} = $desc;
 		}
 	}
 }
