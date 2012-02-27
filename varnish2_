@@ -721,6 +721,7 @@ sub print_if_exist
 	my $value = $_[1];
 	my $field = $_[2];
 	my $title = "$value.$field";
+
 	if (defined($_[3])) {
 		$title = $_[3];
 	}
@@ -743,31 +744,20 @@ sub get_config
 		usage "No such aspect";
 	}
 
-	#
-	# Get the aspect that we need
-	#
-
-	my $aspect;
+	my %values;
+	my %aspects;
 	if ($ASPECTS{$graph}{"varnish$versionnumber"}) {
-		$aspect = $ASPECTS{$graph}{"varnish$versionnumber"};
+		%values  = %{$ASPECTS{$graph}{"varnish$versionnumber"}{values}};
+		%aspects = ( $graph => $ASPECTS{$graph}{"varnish$versionnumber"} ); 
 	}
 	else {
-		$aspect = $ASPECTS{$graph};
+		%values  = %{$ASPECTS{$graph}{'values'}};
+		%aspects = %ASPECTS;
 	}
-
-	#
-	# Get the values
-	#
-
-	my %values = %{$aspect->{values}};
-
-	#
-	# Start printing
-	#
 
 	print "graph_category Varnish\n";
 	foreach my $field (@graph_parameters) {
-		print_if_exist({ $graph => $aspect },$graph,$field,"graph_$field");
+		print_if_exist(\%aspects,$graph,$field,"graph_$field");
 	}
 
 	foreach my $value (keys %values) {
