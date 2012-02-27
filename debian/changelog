@@ -1,3 +1,9 @@
+munin-varnish (20120227.1-1) unstable; urgency=low
+
+  * Fix memory graphs for Varnish 3: no dots in service names.
+
+ -- Allard Hoeve <allard@byte.nl>  Mon, 27 Feb 2012 09:42:59 +0100
+
 munin-varnish (20120206.1-4) unstable; urgency=low
 
   * Make varnish2_ suitable for Varnish3 by adding versioned
