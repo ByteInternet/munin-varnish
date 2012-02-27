@@ -1,4 +1,4 @@
-munin-varnish (20120227.1-1) unstable; urgency=low
+munin-varnish (20120227.1) unstable; urgency=low
 
   * Fix memory graphs for Varnish 3: no dots in service names.
 
